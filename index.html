@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+
+<body ng-app="myApp" ng-controller="namesCtrl">
+   
+
+<form class="pure-form">
+  <input type="text" class="pure-input-rounded" ng-model="fil"></input>
+  <button class="pure-button pure-button-active" ng-click="getRequest()">Search</button>
+  <select ng-change="getRequest()" ng-model="page" value="0" ng-options="v for v in [0,1,2,3,4,5,6,7,8,9,10]"></select>
+  <label >Page</label>
+</form>
+
+<table class="pure-table pure-table-horizontal">
+  <thead>  
+  <tr>
+        <th>#</th>
+        <th>Cover</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Category</th>
+        <th>Publish Date</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+  <tr ng-repeat="x in names">
+    <td>{{ $index+1 }}</td>
+    <td><a href="{{ x.volumeInfo.previewLink }}" target="_blank"><img src="{{ x.volumeInfo.imageLinks.thumbnail }}"  width="80" height="80"></a></td>
+    <td>{{ x.volumeInfo.title }}
+      <br><font size="2">{{ x.volumeInfo.subtitle }}</font>
+      <br><br><font size="2">{{ x.volumeInfo.publisher }}</font>
+    </td>   
+    <td>{{ x.volumeInfo.authors[0] }}</td>
+    <td>{{ x.volumeInfo.categories[0] }}</td>   
+    <td>{{ x.volumeInfo.publishedDate }}</td>
+    
+  </tr>
+</tbody>
+</table>
+
+
+<script>
+angular.module('myApp', []).
+controller('namesCtrl', function($scope,$http) {
+
+    $http.get("https://www.googleapis.com/books/v1/volumes?q=MICROSERVICES").
+    then(
+      /*--this function works like constructor or init method --*/
+      function(response) { 
+            $scope.names = response.data.items;
+            $scope.fil="MICROSERVICES" ;        
+            $scope.page=0 ;
+      });      
+
+      /*--function written in the scope of controller --*/
+      
+      $scope.getRequest = function() {
+                        $http.get("https://www.googleapis.com/books/v1/volumes?q="+$scope.fil+"&startIndex="+$scope.page).
+                              then(function(response){$scope.names = response.data.items
+                                   
+                              
+                              })
+                      }
+});
+</script>
+
+</body>
+</html>
